@@ -69,7 +69,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         >
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-linear-to-br from-white to-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/60">
-              <img src="/logo.png" className="rounded-2xl" alt="Logo" />
+              <img
+                src="/admin-portal/logo.png"
+                className="rounded-2xl"
+                alt="Logo"
+              />
             </div>
             <div>
               <h2

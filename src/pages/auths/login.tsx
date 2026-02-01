@@ -134,7 +134,11 @@ const Login = () => {
           {/* Logo & Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-white to-white rounded-2xl mb-4 shadow-lg shadow-white/50">
-              <img src="/logo.png" className="rounded-2xl" alt="Logo" />
+              <img
+                src="/admin-portal/logo.png"
+                className="rounded-2xl"
+                alt="Logo"
+              />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
             <p className="text-slate-300">Sign in to your admin account</p>
