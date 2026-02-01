@@ -2,7 +2,7 @@
   "users": [
     {
       "id": "user-001",
-      "email": "admin@shipsystem.com",
+      "email": "admin@amstz.com",
       "password": "Admin@123",
       "firstName": "John",
       "lastName": "Administrator",
@@ -11,7 +11,7 @@
     },
     {
       "id": "user-002",
-      "email": "manager@shipsystem.com",
+      "email": "manager@amstz.com",
       "password": "Manager@123",
       "firstName": "Sarah",
       "lastName": "Manager",
@@ -28,7 +28,7 @@
       "city": "Dar es Salaam",
       "country": "Tanzania",
       "contactNumber": "+255 22 286 7801",
-      "contactEmail": "dsm@shipsystem.com",
+      "contactEmail": "dsm@amstz.com",
       "isActive": true,
       "createdAt": "2024-01-15T08:00:00Z"
     },
@@ -40,7 +40,7 @@
       "city": "Zanzibar",
       "country": "Tanzania",
       "contactNumber": "+255 24 223 3485",
-      "contactEmail": "znz@shipsystem.com",
+      "contactEmail": "znz@amstz.com",
       "isActive": true,
       "createdAt": "2024-01-20T08:00:00Z"
     },
@@ -52,7 +52,7 @@
       "city": "Mombasa",
       "country": "Kenya",
       "contactNumber": "+254 41 231 1211",
-      "contactEmail": "mba@shipsystem.com",
+      "contactEmail": "mba@amstz.com",
       "isActive": true,
       "createdAt": "2024-02-01T08:00:00Z"
     },
@@ -64,7 +64,7 @@
       "city": "Durban",
       "country": "South Africa",
       "contactNumber": "+27 31 361 8111",
-      "contactEmail": "dur@shipsystem.com",
+      "contactEmail": "dur@amstz.com",
       "isActive": true,
       "createdAt": "2024-02-10T08:00:00Z"
     }
@@ -273,7 +273,7 @@
       "id": "staff-001",
       "firstName": "John",
       "lastName": "Administrator",
-      "email": "admin@shipsystem.com",
+      "email": "admin@amstz.com",
       "phone": "+255 712 000 001",
       "roleId": "role-001",
       "roleName": "Super Admin",
@@ -287,7 +287,7 @@
       "id": "staff-002",
       "firstName": "Sarah",
       "lastName": "Manager",
-      "email": "manager@shipsystem.com",
+      "email": "manager@amstz.com",
       "phone": "+255 712 000 002",
       "roleId": "role-002",
       "roleName": "Station Manager",
@@ -301,7 +301,7 @@
       "id": "staff-003",
       "firstName": "Michael",
       "lastName": "Operator",
-      "email": "michael.operator@shipsystem.com",
+      "email": "michael.operator@amstz.com",
       "phone": "+255 712 000 003",
       "roleId": "role-003",
       "roleName": "Operations Staff",
@@ -318,14 +318,54 @@
       "name": "Super Admin",
       "description": "Full system access with all permissions",
       "permissions": [
-        {"id": "perm-001", "module": "Users", "action": "create", "description": "Create new users"},
-        {"id": "perm-002", "module": "Users", "action": "read", "description": "View users"},
-        {"id": "perm-003", "module": "Users", "action": "update", "description": "Update users"},
-        {"id": "perm-004", "module": "Users", "action": "delete", "description": "Delete users"},
-        {"id": "perm-005", "module": "Schedules", "action": "manage", "description": "Manage all schedules"},
-        {"id": "perm-006", "module": "Requests", "action": "manage", "description": "Manage all requests"},
-        {"id": "perm-007", "module": "Stations", "action": "manage", "description": "Manage stations"},
-        {"id": "perm-008", "module": "Roles", "action": "manage", "description": "Manage roles"}
+        {
+          "id": "perm-001",
+          "module": "Users",
+          "action": "create",
+          "description": "Create new users"
+        },
+        {
+          "id": "perm-002",
+          "module": "Users",
+          "action": "read",
+          "description": "View users"
+        },
+        {
+          "id": "perm-003",
+          "module": "Users",
+          "action": "update",
+          "description": "Update users"
+        },
+        {
+          "id": "perm-004",
+          "module": "Users",
+          "action": "delete",
+          "description": "Delete users"
+        },
+        {
+          "id": "perm-005",
+          "module": "Schedules",
+          "action": "manage",
+          "description": "Manage all schedules"
+        },
+        {
+          "id": "perm-006",
+          "module": "Requests",
+          "action": "manage",
+          "description": "Manage all requests"
+        },
+        {
+          "id": "perm-007",
+          "module": "Stations",
+          "action": "manage",
+          "description": "Manage stations"
+        },
+        {
+          "id": "perm-008",
+          "module": "Roles",
+          "action": "manage",
+          "description": "Manage roles"
+        }
       ],
       "createdAt": "2024-01-01T00:00:00Z"
     },
@@ -334,9 +374,24 @@
       "name": "Station Manager",
       "description": "Manage station operations and staff",
       "permissions": [
-        {"id": "perm-002", "module": "Users", "action": "read", "description": "View users"},
-        {"id": "perm-005", "module": "Schedules", "action": "manage", "description": "Manage schedules"},
-        {"id": "perm-006", "module": "Requests", "action": "manage", "description": "Manage requests"}
+        {
+          "id": "perm-002",
+          "module": "Users",
+          "action": "read",
+          "description": "View users"
+        },
+        {
+          "id": "perm-005",
+          "module": "Schedules",
+          "action": "manage",
+          "description": "Manage schedules"
+        },
+        {
+          "id": "perm-006",
+          "module": "Requests",
+          "action": "manage",
+          "description": "Manage requests"
+        }
       ],
       "createdAt": "2024-01-01T00:00:00Z"
     },
@@ -345,9 +400,24 @@
       "name": "Operations Staff",
       "description": "Handle day-to-day operations",
       "permissions": [
-        {"id": "perm-002", "module": "Users", "action": "read", "description": "View users"},
-        {"id": "perm-009", "module": "Schedules", "action": "read", "description": "View schedules"},
-        {"id": "perm-010", "module": "Requests", "action": "read", "description": "View requests"}
+        {
+          "id": "perm-002",
+          "module": "Users",
+          "action": "read",
+          "description": "View users"
+        },
+        {
+          "id": "perm-009",
+          "module": "Schedules",
+          "action": "read",
+          "description": "View schedules"
+        },
+        {
+          "id": "perm-010",
+          "module": "Requests",
+          "action": "read",
+          "description": "View requests"
+        }
       ],
       "createdAt": "2024-01-01T00:00:00Z"
     }
