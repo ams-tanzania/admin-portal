@@ -102,7 +102,7 @@ const Login = () => {
         showToast("Login successful! Welcome back.", "success");
         // Redirect to dashboard
         setTimeout(() => {
-          window.location.href = "/admin-portal/dashboard";
+          window.location.href = "/admin-portal/#/dashboard";
         }, 1000);
       } else {
         showToast("Invalid email or password", "error");
