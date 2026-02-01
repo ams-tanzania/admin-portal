@@ -68,8 +68,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/60">
-              <Ship className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 bg-linear-to-br from-white to-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/60">
+              <img src="/logo.png" className="rounded-2xl" alt="Logo" />
             </div>
             <div>
               <h2
@@ -113,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onClose()}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
                   active
-                    ? "bg-gradient-to-r from-orange-400 to-orange-300 text-white shadow-lg shadow-blue-500/60"
+                    ? "bg-linear-to-r from-orange-400 to-orange-300 text-white shadow-lg shadow-blue-500/60"
                     : isDarkTheme
                       ? "text-slate-400 hover:text-white hover:bg-slate-800"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"

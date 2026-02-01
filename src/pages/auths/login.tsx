@@ -133,8 +133,8 @@ const Login = () => {
         <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8">
           {/* Logo & Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl mb-4 shadow-lg shadow-orange-500/50">
-              <Ship className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-white to-white rounded-2xl mb-4 shadow-lg shadow-white/50">
+              <img src="/logo.png" className="rounded-2xl" alt="Logo" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
             <p className="text-slate-300">Sign in to your admin account</p>
