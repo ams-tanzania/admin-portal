@@ -4,8 +4,10 @@ import "./index.css";
 import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 
+const basename = import.meta.env.DEV ? "/" : "/WeMovies/";
+
 createRoot(document.getElementById("root")!).render(
-  <BrowserRouter>
+  <BrowserRouter basename={basename}>
     <StrictMode>
       <App />
     </StrictMode>
