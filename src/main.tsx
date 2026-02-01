@@ -7,7 +7,7 @@ import { HashRouter } from "react-router-dom";
 const basename = import.meta.env.DEV ? "/" : "/admin-portal/";
 
 createRoot(document.getElementById("root")!).render(
-  <HashRouter basename={basename}>
+  <HashRouter>
     <StrictMode>
       <App />
     </StrictMode>
