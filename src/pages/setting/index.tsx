@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { 
-  Settings, 
-  User, 
-  Lock, 
-  Bell, 
-  Globe, 
-  Palette, 
-  Save, 
+import React, { useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import {
+  Settings,
+  User,
+  Lock,
+  Bell,
+  Globe,
+  Palette,
+  Save,
   Camera,
   Mail,
   Phone,
@@ -16,9 +16,9 @@ import {
   Eye,
   EyeOff,
   Check,
-  X
-} from 'lucide-react';
-import Swal from 'sweetalert2';
+  X,
+} from "lucide-react";
+import Swal from "sweetalert2";
 
 export interface User {
   id: string;
@@ -26,7 +26,7 @@ export interface User {
   phone: string;
   location: string;
   email: string;
-  role: 'Admin' | 'Manager' | 'User' | 'Customer' | 'Guest';
+  role: "Admin" | "Manager" | "User" | "Customer" | "Guest";
   createdAt: string;
   avatar?: string;
   bio?: string;
@@ -39,7 +39,9 @@ const SettingsPage: React.FC = () => {
   const context = useOutletContext<{ isDarkTheme: boolean }>();
   const isDarkTheme = context?.isDarkTheme ?? false;
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications' | 'preferences'>('profile');
+  const [activeTab, setActiveTab] = useState<
+    "profile" | "security" | "notifications" | "preferences"
+  >("profile");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -49,25 +51,25 @@ const SettingsPage: React.FC = () => {
   // Example: const { user } = useAuth(); // Get from your auth context
   // Then use: const [profile, setProfile] = useState<User>(user);
   const [profile, setProfile] = useState<User>({
-    id: '1',
-    fullName: 'Admin User',
-    email: 'admin@shipsystem.com',
-    phone: '0675752254',
-    location: 'Bagamoyo',
-    role: 'Admin',
-    createdAt: '2024-01-01',
-    bio: 'System administrator with full access to shipping management system',
-    company: 'East African Shipping Co.',
-    website: 'https://easafricashipping.com'
+    id: "1",
+    fullName: "Admin User",
+    email: "admin@amstz.com",
+    phone: "0675752254",
+    location: "Bagamoyo",
+    role: "Admin",
+    createdAt: "2024-01-01",
+    bio: "System administrator with full access to shipping management system",
+    company: "East African Shipping Co.",
+    website: "/",
   });
 
   const [profileForm, setProfileForm] = useState(profile);
 
   // Security settings
   const [securityForm, setSecurityForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   // Notification settings
@@ -78,16 +80,16 @@ const SettingsPage: React.FC = () => {
     newRequestAlerts: true,
     statusUpdateAlerts: true,
     paymentAlerts: true,
-    systemUpdates: false
+    systemUpdates: false,
   });
 
   // Preference settings
   const [preferences, setPreferences] = useState({
-    language: 'en',
-    timezone: 'Africa/Dar_es_Salaam',
-    dateFormat: 'MM/DD/YYYY',
-    currency: 'TZS',
-    itemsPerPage: 10
+    language: "en",
+    timezone: "Africa/Dar_es_Salaam",
+    dateFormat: "MM/DD/YYYY",
+    currency: "TZS",
+    itemsPerPage: 10,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -107,16 +109,18 @@ const SettingsPage: React.FC = () => {
   // Validate profile form
   const validateProfile = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (!profileForm.fullName.trim()) newErrors.fullName = 'Full name is required';
+
+    if (!profileForm.fullName.trim())
+      newErrors.fullName = "Full name is required";
     if (!profileForm.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(profileForm.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = "Email is invalid";
     }
-    if (!profileForm.phone.trim()) newErrors.phone = 'Phone is required';
-    if (!profileForm.location.trim()) newErrors.location = 'Location is required';
-    
+    if (!profileForm.phone.trim()) newErrors.phone = "Phone is required";
+    if (!profileForm.location.trim())
+      newErrors.location = "Location is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -124,19 +128,19 @@ const SettingsPage: React.FC = () => {
   // Validate security form
   const validateSecurity = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!securityForm.currentPassword) {
-      newErrors.currentPassword = 'Current password is required';
+      newErrors.currentPassword = "Current password is required";
     }
     if (!securityForm.newPassword) {
-      newErrors.newPassword = 'New password is required';
+      newErrors.newPassword = "New password is required";
     } else if (securityForm.newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters';
+      newErrors.newPassword = "Password must be at least 8 characters";
     }
     if (securityForm.newPassword !== securityForm.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+      newErrors.confirmPassword = "Passwords do not match";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -146,11 +150,11 @@ const SettingsPage: React.FC = () => {
     if (validateProfile()) {
       setProfile(profileForm);
       Swal.fire({
-        icon: 'success',
-        title: 'Profile Updated!',
-        text: 'Your profile has been updated successfully',
-        confirmButtonColor: '#f97316',
-        timer: 2000
+        icon: "success",
+        title: "Profile Updated!",
+        text: "Your profile has been updated successfully",
+        confirmButtonColor: "#f97316",
+        timer: 2000,
       });
     }
   };
@@ -160,43 +164,47 @@ const SettingsPage: React.FC = () => {
     if (validateSecurity()) {
       // In production, you would call your API here
       Swal.fire({
-        icon: 'success',
-        title: 'Password Changed!',
-        text: 'Your password has been changed successfully',
-        confirmButtonColor: '#f97316',
-        timer: 2000
+        icon: "success",
+        title: "Password Changed!",
+        text: "Your password has been changed successfully",
+        confirmButtonColor: "#f97316",
+        timer: 2000,
       });
-      setSecurityForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setSecurityForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     }
   };
 
   // Save notifications
   const handleSaveNotifications = () => {
     Swal.fire({
-      icon: 'success',
-      title: 'Notifications Updated!',
-      text: 'Your notification preferences have been saved',
-      confirmButtonColor: '#f97316',
-      timer: 2000
+      icon: "success",
+      title: "Notifications Updated!",
+      text: "Your notification preferences have been saved",
+      confirmButtonColor: "#f97316",
+      timer: 2000,
     });
   };
 
   // Save preferences
   const handleSavePreferences = () => {
     Swal.fire({
-      icon: 'success',
-      title: 'Preferences Updated!',
-      text: 'Your preferences have been saved',
-      confirmButtonColor: '#f97316',
-      timer: 2000
+      icon: "success",
+      title: "Preferences Updated!",
+      text: "Your preferences have been saved",
+      confirmButtonColor: "#f97316",
+      timer: 2000,
     });
   };
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: User },
-    { id: 'security', label: 'Security', icon: Lock },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: Globe }
+    { id: "profile", label: "Profile", icon: User },
+    { id: "security", label: "Security", icon: Lock },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "preferences", label: "Preferences", icon: Globe },
   ];
 
   return (
@@ -208,10 +216,14 @@ const SettingsPage: React.FC = () => {
             <Settings className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h1 className={`text-3xl font-bold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+            <h1
+              className={`text-3xl font-bold ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+            >
               Settings
             </h1>
-            <p className={`${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+            <p
+              className={`${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+            >
               Manage your account settings and preferences
             </p>
           </div>
@@ -220,7 +232,9 @@ const SettingsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Navigation */}
-        <div className={`lg:col-span-1 rounded-xl ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-lg p-4 h-fit`}>
+        <div
+          className={`lg:col-span-1 rounded-xl ${isDarkTheme ? "bg-slate-800" : "bg-white"} shadow-lg p-4 h-fit`}
+        >
           <nav className="space-y-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -231,10 +245,10 @@ const SettingsPage: React.FC = () => {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-gradient-to-r from-orange-500 to-orange-400 text-white shadow-lg'
+                      ? "bg-gradient-to-r from-orange-500 to-orange-400 text-white shadow-lg"
                       : isDarkTheme
-                      ? 'text-slate-300 hover:bg-slate-700'
-                      : 'text-gray-700 hover:bg-gray-100'
+                        ? "text-slate-300 hover:bg-slate-700"
+                        : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -248,9 +262,13 @@ const SettingsPage: React.FC = () => {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {/* Profile Tab */}
-          {activeTab === 'profile' && (
-            <div className={`rounded-xl ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-lg p-6`}>
-              <h2 className={`text-2xl font-bold mb-6 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+          {activeTab === "profile" && (
+            <div
+              className={`rounded-xl ${isDarkTheme ? "bg-slate-800" : "bg-white"} shadow-lg p-6`}
+            >
+              <h2
+                className={`text-2xl font-bold mb-6 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+              >
                 Profile Information
               </h2>
 
@@ -265,7 +283,12 @@ const SettingsPage: React.FC = () => {
                     />
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center text-white text-3xl font-bold">
-                      {profileForm.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                      {profileForm.fullName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)}
                     </div>
                   )}
                   <label className="absolute bottom-0 right-0 p-2 bg-orange-500 rounded-full cursor-pointer hover:bg-orange-600 transition-colors shadow-lg">
@@ -279,14 +302,24 @@ const SettingsPage: React.FC = () => {
                   </label>
                 </div>
                 <div>
-                  <h3 className={`text-xl font-semibold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+                  <h3
+                    className={`text-xl font-semibold ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                  >
                     {profile.fullName}
                   </h3>
-                  <p className={`${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+                  <p
+                    className={`${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                  >
                     {profile.role}
                   </p>
-                  <p className={`text-sm ${isDarkTheme ? 'text-slate-500' : 'text-gray-500'}`}>
-                    Member since {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  <p
+                    className={`text-sm ${isDarkTheme ? "text-slate-500" : "text-gray-500"}`}
+                  >
+                    Member since{" "}
+                    {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
               </div>
@@ -294,74 +327,116 @@ const SettingsPage: React.FC = () => {
               <div className="space-y-6">
                 {/* Full Name */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     <User className="w-4 h-4 inline mr-2" />
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={profileForm.fullName}
-                    onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        fullName: e.target.value,
+                      })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                    } ${errors.fullName ? 'border-red-500' : ''}`}
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } ${errors.fullName ? "border-red-500" : ""}`}
                     placeholder="Enter your full name"
                   />
-                  {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>}
+                  {errors.fullName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.fullName}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     <Mail className="w-4 h-4 inline mr-2" />
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     value={profileForm.email}
-                    onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                    onChange={(e) =>
+                      setProfileForm({ ...profileForm, email: e.target.value })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                    } ${errors.email ? 'border-red-500' : ''}`}
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } ${errors.email ? "border-red-500" : ""}`}
                     placeholder="your.email@example.com"
                   />
-                  {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                  )}
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     <Phone className="w-4 h-4 inline mr-2" />
                     Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     value={profileForm.phone}
-                    onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                    onChange={(e) =>
+                      setProfileForm({ ...profileForm, phone: e.target.value })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                    } ${errors.phone ? 'border-red-500' : ''}`}
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } ${errors.phone ? "border-red-500" : ""}`}
                     placeholder="+255 XXX XXX XXX"
                   />
-                  {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
+                  {errors.phone && (
+                    <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                  )}
                 </div>
 
                 {/* Location */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     <MapPin className="w-4 h-4 inline mr-2" />
                     Location <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={profileForm.location}
-                    onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        location: e.target.value,
+                      })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                    } ${errors.location ? 'border-red-500' : ''}`}
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
+                    } ${errors.location ? "border-red-500" : ""}`}
                     placeholder="City, Country"
                   />
-                  {errors.location && <p className="mt-1 text-sm text-red-500">{errors.location}</p>}
+                  {errors.location && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.location}
+                    </p>
+                  )}
                 </div>
 
                 {/* Company */}
@@ -424,98 +499,159 @@ const SettingsPage: React.FC = () => {
           )}
 
           {/* Security Tab */}
-          {activeTab === 'security' && (
-            <div className={`rounded-xl ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-lg p-6`}>
-              <h2 className={`text-2xl font-bold mb-6 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+          {activeTab === "security" && (
+            <div
+              className={`rounded-xl ${isDarkTheme ? "bg-slate-800" : "bg-white"} shadow-lg p-6`}
+            >
+              <h2
+                className={`text-2xl font-bold mb-6 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+              >
                 Security Settings
               </h2>
 
               <div className="space-y-6">
                 {/* Current Password */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     Current Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      type={showCurrentPassword ? 'text' : 'password'}
+                      type={showCurrentPassword ? "text" : "password"}
                       value={securityForm.currentPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, currentPassword: e.target.value })}
+                      onChange={(e) =>
+                        setSecurityForm({
+                          ...securityForm,
+                          currentPassword: e.target.value,
+                        })
+                      }
                       className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                        isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                      } ${errors.currentPassword ? 'border-red-500' : ''}`}
+                        isDarkTheme
+                          ? "bg-slate-900 border-slate-700 text-white"
+                          : "bg-white border-gray-300 text-gray-900"
+                      } ${errors.currentPassword ? "border-red-500" : ""}`}
                       placeholder="Enter current password"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
                       className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                        isDarkTheme ? 'text-slate-400' : 'text-gray-400'
+                        isDarkTheme ? "text-slate-400" : "text-gray-400"
                       }`}
                     >
-                      {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showCurrentPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
-                  {errors.currentPassword && <p className="mt-1 text-sm text-red-500">{errors.currentPassword}</p>}
+                  {errors.currentPassword && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.currentPassword}
+                    </p>
+                  )}
                 </div>
 
                 {/* New Password */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     New Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      type={showNewPassword ? 'text' : 'password'}
+                      type={showNewPassword ? "text" : "password"}
                       value={securityForm.newPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, newPassword: e.target.value })}
+                      onChange={(e) =>
+                        setSecurityForm({
+                          ...securityForm,
+                          newPassword: e.target.value,
+                        })
+                      }
                       className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                        isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                      } ${errors.newPassword ? 'border-red-500' : ''}`}
+                        isDarkTheme
+                          ? "bg-slate-900 border-slate-700 text-white"
+                          : "bg-white border-gray-300 text-gray-900"
+                      } ${errors.newPassword ? "border-red-500" : ""}`}
                       placeholder="Enter new password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
                       className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                        isDarkTheme ? 'text-slate-400' : 'text-gray-400'
+                        isDarkTheme ? "text-slate-400" : "text-gray-400"
                       }`}
                     >
-                      {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showNewPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
-                  {errors.newPassword && <p className="mt-1 text-sm text-red-500">{errors.newPassword}</p>}
-                  <p className={`mt-1 text-xs ${isDarkTheme ? 'text-slate-500' : 'text-gray-500'}`}>
+                  {errors.newPassword && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.newPassword}
+                    </p>
+                  )}
+                  <p
+                    className={`mt-1 text-xs ${isDarkTheme ? "text-slate-500" : "text-gray-500"}`}
+                  >
                     Password must be at least 8 characters long
                   </p>
                 </div>
 
                 {/* Confirm Password */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     Confirm New Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showConfirmPassword ? "text" : "password"}
                       value={securityForm.confirmPassword}
-                      onChange={(e) => setSecurityForm({ ...securityForm, confirmPassword: e.target.value })}
+                      onChange={(e) =>
+                        setSecurityForm({
+                          ...securityForm,
+                          confirmPassword: e.target.value,
+                        })
+                      }
                       className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                        isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-                      } ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                        isDarkTheme
+                          ? "bg-slate-900 border-slate-700 text-white"
+                          : "bg-white border-gray-300 text-gray-900"
+                      } ${errors.confirmPassword ? "border-red-500" : ""}`}
                       placeholder="Confirm new password"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                        isDarkTheme ? 'text-slate-400' : 'text-gray-400'
+                        isDarkTheme ? "text-slate-400" : "text-gray-400"
                       }`}
                     >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
                     </button>
                   </div>
-                  {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+                  {errors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.confirmPassword}
+                    </p>
+                  )}
                 </div>
 
                 <button
@@ -527,22 +663,34 @@ const SettingsPage: React.FC = () => {
                 </button>
 
                 {/* Two-Factor Authentication */}
-                <div className={`mt-8 p-6 rounded-xl border ${isDarkTheme ? 'bg-slate-900 border-slate-700' : 'bg-gray-50 border-gray-200'}`}>
+                <div
+                  className={`mt-8 p-6 rounded-xl border ${isDarkTheme ? "bg-slate-900 border-slate-700" : "bg-gray-50 border-gray-200"}`}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
-                      <Shield className={`w-6 h-6 mt-1 ${isDarkTheme ? 'text-green-400' : 'text-green-500'}`} />
+                      <Shield
+                        className={`w-6 h-6 mt-1 ${isDarkTheme ? "text-green-400" : "text-green-500"}`}
+                      />
                       <div>
-                        <h3 className={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+                        <h3
+                          className={`text-lg font-semibold ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                        >
                           Two-Factor Authentication
                         </h3>
-                        <p className={`text-sm mt-1 ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+                        <p
+                          className={`text-sm mt-1 ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                        >
                           Add an extra layer of security to your account
                         </p>
                       </div>
                     </div>
-                    <button className={`px-4 py-2 rounded-lg border transition-colors ${
-                      isDarkTheme ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'
-                    }`}>
+                    <button
+                      className={`px-4 py-2 rounded-lg border transition-colors ${
+                        isDarkTheme
+                          ? "border-slate-600 text-slate-300 hover:bg-slate-700"
+                          : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
                       Enable
                     </button>
                   </div>
@@ -552,87 +700,157 @@ const SettingsPage: React.FC = () => {
           )}
 
           {/* Notifications Tab */}
-          {activeTab === 'notifications' && (
-            <div className={`rounded-xl ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-lg p-6`}>
-              <h2 className={`text-2xl font-bold mb-6 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+          {activeTab === "notifications" && (
+            <div
+              className={`rounded-xl ${isDarkTheme ? "bg-slate-800" : "bg-white"} shadow-lg p-6`}
+            >
+              <h2
+                className={`text-2xl font-bold mb-6 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+              >
                 Notification Preferences
               </h2>
 
               <div className="space-y-6">
                 {/* Notification Channels */}
                 <div>
-                  <h3 className={`text-lg font-semibold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+                  <h3
+                    className={`text-lg font-semibold mb-4 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                  >
                     Notification Channels
                   </h3>
-                  
+
                   <div className="space-y-4">
-                    <div className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? 'bg-slate-900' : 'bg-gray-50'}`}>
+                    <div
+                      className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? "bg-slate-900" : "bg-gray-50"}`}
+                    >
                       <div className="flex items-center gap-3">
-                        <Mail className={`w-5 h-5 ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`} />
+                        <Mail
+                          className={`w-5 h-5 ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                        />
                         <div>
-                          <p className={`font-medium ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Email Notifications</p>
-                          <p className={`text-sm ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+                          <p
+                            className={`font-medium ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                          >
+                            Email Notifications
+                          </p>
+                          <p
+                            className={`text-sm ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                          >
                             Receive notifications via email
                           </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => setNotifications({ ...notifications, emailNotifications: !notifications.emailNotifications })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            emailNotifications:
+                              !notifications.emailNotifications,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.emailNotifications ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.emailNotifications
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.emailNotifications ? 'translate-x-7' : 'translate-x-0'
+                            notifications.emailNotifications
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
                     </div>
 
-                    <div className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? 'bg-slate-900' : 'bg-gray-50'}`}>
+                    <div
+                      className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? "bg-slate-900" : "bg-gray-50"}`}
+                    >
                       <div className="flex items-center gap-3">
-                        <Bell className={`w-5 h-5 ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`} />
+                        <Bell
+                          className={`w-5 h-5 ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                        />
                         <div>
-                          <p className={`font-medium ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Push Notifications</p>
-                          <p className={`text-sm ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+                          <p
+                            className={`font-medium ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                          >
+                            Push Notifications
+                          </p>
+                          <p
+                            className={`text-sm ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                          >
                             Receive push notifications in browser
                           </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => setNotifications({ ...notifications, pushNotifications: !notifications.pushNotifications })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            pushNotifications: !notifications.pushNotifications,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.pushNotifications ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.pushNotifications
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.pushNotifications ? 'translate-x-7' : 'translate-x-0'
+                            notifications.pushNotifications
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
                     </div>
 
-                    <div className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? 'bg-slate-900' : 'bg-gray-50'}`}>
+                    <div
+                      className={`flex items-center justify-between p-4 rounded-xl ${isDarkTheme ? "bg-slate-900" : "bg-gray-50"}`}
+                    >
                       <div className="flex items-center gap-3">
-                        <Phone className={`w-5 h-5 ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`} />
+                        <Phone
+                          className={`w-5 h-5 ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                        />
                         <div>
-                          <p className={`font-medium ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>SMS Notifications</p>
-                          <p className={`text-sm ${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
+                          <p
+                            className={`font-medium ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                          >
+                            SMS Notifications
+                          </p>
+                          <p
+                            className={`text-sm ${isDarkTheme ? "text-slate-400" : "text-gray-600"}`}
+                          >
                             Receive notifications via SMS
                           </p>
                         </div>
                       </div>
                       <button
-                        onClick={() => setNotifications({ ...notifications, smsNotifications: !notifications.smsNotifications })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            smsNotifications: !notifications.smsNotifications,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.smsNotifications ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.smsNotifications
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.smsNotifications ? 'translate-x-7' : 'translate-x-0'
+                            notifications.smsNotifications
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
@@ -642,70 +860,141 @@ const SettingsPage: React.FC = () => {
 
                 {/* Alert Types */}
                 <div>
-                  <h3 className={`text-lg font-semibold mb-4 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+                  <h3
+                    className={`text-lg font-semibold mb-4 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+                  >
                     Alert Types
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className={isDarkTheme ? 'text-slate-300' : 'text-gray-700'}>New shipping requests</span>
+                      <span
+                        className={
+                          isDarkTheme ? "text-slate-300" : "text-gray-700"
+                        }
+                      >
+                        New shipping requests
+                      </span>
                       <button
-                        onClick={() => setNotifications({ ...notifications, newRequestAlerts: !notifications.newRequestAlerts })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            newRequestAlerts: !notifications.newRequestAlerts,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.newRequestAlerts ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.newRequestAlerts
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.newRequestAlerts ? 'translate-x-7' : 'translate-x-0'
+                            notifications.newRequestAlerts
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className={isDarkTheme ? 'text-slate-300' : 'text-gray-700'}>Status updates</span>
+                      <span
+                        className={
+                          isDarkTheme ? "text-slate-300" : "text-gray-700"
+                        }
+                      >
+                        Status updates
+                      </span>
                       <button
-                        onClick={() => setNotifications({ ...notifications, statusUpdateAlerts: !notifications.statusUpdateAlerts })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            statusUpdateAlerts:
+                              !notifications.statusUpdateAlerts,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.statusUpdateAlerts ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.statusUpdateAlerts
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.statusUpdateAlerts ? 'translate-x-7' : 'translate-x-0'
+                            notifications.statusUpdateAlerts
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className={isDarkTheme ? 'text-slate-300' : 'text-gray-700'}>Payment alerts</span>
+                      <span
+                        className={
+                          isDarkTheme ? "text-slate-300" : "text-gray-700"
+                        }
+                      >
+                        Payment alerts
+                      </span>
                       <button
-                        onClick={() => setNotifications({ ...notifications, paymentAlerts: !notifications.paymentAlerts })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            paymentAlerts: !notifications.paymentAlerts,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.paymentAlerts ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.paymentAlerts
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.paymentAlerts ? 'translate-x-7' : 'translate-x-0'
+                            notifications.paymentAlerts
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className={isDarkTheme ? 'text-slate-300' : 'text-gray-700'}>System updates</span>
+                      <span
+                        className={
+                          isDarkTheme ? "text-slate-300" : "text-gray-700"
+                        }
+                      >
+                        System updates
+                      </span>
                       <button
-                        onClick={() => setNotifications({ ...notifications, systemUpdates: !notifications.systemUpdates })}
+                        onClick={() =>
+                          setNotifications({
+                            ...notifications,
+                            systemUpdates: !notifications.systemUpdates,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-colors ${
-                          notifications.systemUpdates ? 'bg-orange-500' : isDarkTheme ? 'bg-slate-700' : 'bg-gray-300'
+                          notifications.systemUpdates
+                            ? "bg-orange-500"
+                            : isDarkTheme
+                              ? "bg-slate-700"
+                              : "bg-gray-300"
                         }`}
                       >
                         <span
                           className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                            notifications.systemUpdates ? 'translate-x-7' : 'translate-x-0'
+                            notifications.systemUpdates
+                              ? "translate-x-7"
+                              : "translate-x-0"
                           }`}
                         />
                       </button>
@@ -725,24 +1014,37 @@ const SettingsPage: React.FC = () => {
           )}
 
           {/* Preferences Tab */}
-          {activeTab === 'preferences' && (
-            <div className={`rounded-xl ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-lg p-6`}>
-              <h2 className={`text-2xl font-bold mb-6 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
+          {activeTab === "preferences" && (
+            <div
+              className={`rounded-xl ${isDarkTheme ? "bg-slate-800" : "bg-white"} shadow-lg p-6`}
+            >
+              <h2
+                className={`text-2xl font-bold mb-6 ${isDarkTheme ? "text-white" : "text-gray-900"}`}
+              >
                 System Preferences
               </h2>
 
               <div className="space-y-6">
                 {/* Language */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     <Globe className="w-4 h-4 inline mr-2" />
                     Language
                   </label>
                   <select
                     value={preferences.language}
-                    onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
+                    onChange={(e) =>
+                      setPreferences({
+                        ...preferences,
+                        language: e.target.value,
+                      })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
                     }`}
                   >
                     <option value="en">English</option>
@@ -754,18 +1056,31 @@ const SettingsPage: React.FC = () => {
 
                 {/* Timezone */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     Timezone
                   </label>
                   <select
                     value={preferences.timezone}
-                    onChange={(e) => setPreferences({ ...preferences, timezone: e.target.value })}
+                    onChange={(e) =>
+                      setPreferences({
+                        ...preferences,
+                        timezone: e.target.value,
+                      })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
                     }`}
                   >
-                    <option value="Africa/Dar_es_Salaam">East Africa Time (GMT+3)</option>
-                    <option value="Africa/Nairobi">East Africa Time (GMT+3)</option>
+                    <option value="Africa/Dar_es_Salaam">
+                      East Africa Time (GMT+3)
+                    </option>
+                    <option value="Africa/Nairobi">
+                      East Africa Time (GMT+3)
+                    </option>
                     <option value="Africa/Cairo">Egypt Time (GMT+2)</option>
                     <option value="UTC">UTC (GMT+0)</option>
                   </select>
@@ -773,14 +1088,23 @@ const SettingsPage: React.FC = () => {
 
                 {/* Date Format */}
                 <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+                  <label
+                    className={`block text-sm font-medium mb-2 ${isDarkTheme ? "text-slate-300" : "text-gray-700"}`}
+                  >
                     Date Format
                   </label>
                   <select
                     value={preferences.dateFormat}
-                    onChange={(e) => setPreferences({ ...preferences, dateFormat: e.target.value })}
+                    onChange={(e) =>
+                      setPreferences({
+                        ...preferences,
+                        dateFormat: e.target.value,
+                      })
+                    }
                     className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+                      isDarkTheme
+                        ? "bg-slate-900 border-slate-700 text-white"
+                        : "bg-white border-gray-300 text-gray-900"
                     }`}
                   >
                     <option value="MM/DD/YYYY">MM/DD/YYYY (01/31/2024)</option>
