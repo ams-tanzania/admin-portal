@@ -1,198 +1,195 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Save } from 'lucide-react';
+import { getRouteById, updateRoute, type CreateRoutePayload } from '../api/api_services/routes';
+import { type Branch } from '../api/api_services/branch';
+import { type Route } from '../api/api_services/routes';
 
-// Station type definition
-export interface Station {
-  id: string;
-  stationName: string;
-  city: string;
-  country: string;
-}
-
-// Route type definition
-export interface Route {
-  id: string;
-  routeName: string;
-  departure: string;
-  destination: string;
-  createdAt: string;
-}
-
-// Edit Route Component
-const EditRoutePage: React.FC<{
+const EditRoute: React.FC<{
   isDarkTheme: boolean;
-  stations: Station[];
-  routes: Route[];
+  branches: Branch[];
   route: Route;
-  onSave: (route: Route) => void;
+  onSave: () => void;
   onCancel: () => void;
-}> = ({ isDarkTheme, stations, routes, route, onSave, onCancel }) => {
-  const [formData, setFormData] = useState({
-    routeName: route.routeName,
-    departure: route.departure,
-    destination: route.destination
+}> = ({ isDarkTheme, branches, route, onSave, onCancel }) => {
+  const [formData, setFormData] = useState<CreateRoutePayload>({
+    name: '',
+    origin_branch_id: '',
+    destination_branch_id: '',
+    estimated_duration_hours: 24,
   });
 
   const [errors, setErrors] = useState({
-    routeName: '',
-    departure: '',
-    destination: ''
+    name: '',
+    origin_branch_id: '',
+    destination_branch_id: '',
+    estimated_duration_hours: '',
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      routeName: '',
-      departure: '',
-      destination: ''
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+
+  // Fetch full route details (includes branch IDs) on mount
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const detail = await getRouteById(route.id);
+        setFormData({
+          name: detail.name,
+          origin_branch_id: detail.origin_branch_id,
+          destination_branch_id: detail.destination_branch_id,
+          estimated_duration_hours: detail.estimated_duration_hours,
+        });
+      } catch (err: any) {
+        alert(err?.response?.data?.message || 'Failed to load route details');
+        onCancel();
+      } finally {
+        setIsFetching(false);
+      }
     };
+    fetchDetail();
+  }, [route.id]);
 
-    // Validate route name (check uniqueness excluding current route)
-    if (!formData.routeName) {
-      newErrors.routeName = 'Route name is required';
-    } else if (routes.some(r => r.id !== route.id && r.routeName.toLowerCase() === formData.routeName.toLowerCase())) {
-      newErrors.routeName = 'Route name must be unique';
-    }
-
-    // Validate departure
-    if (!formData.departure) {
-      newErrors.departure = 'Departure station is required';
-    }
-
-    // Validate destination
-    if (!formData.destination) {
-      newErrors.destination = 'Destination station is required';
-    } else if (formData.departure === formData.destination) {
-      newErrors.destination = 'Destination must be different from departure';
-    }
-
+  const validate = () => {
+    const newErrors = { name: '', origin_branch_id: '', destination_branch_id: '', estimated_duration_hours: '' };
+    if (!formData.name.trim()) newErrors.name = 'Route name is required';
+    if (!formData.origin_branch_id) newErrors.origin_branch_id = 'Origin branch is required';
+    if (!formData.destination_branch_id) newErrors.destination_branch_id = 'Destination branch is required';
+    else if (formData.origin_branch_id === formData.destination_branch_id)
+      newErrors.destination_branch_id = 'Destination must differ from origin';
+    if (!formData.estimated_duration_hours || formData.estimated_duration_hours <= 0)
+      newErrors.estimated_duration_hours = 'Duration must be greater than 0';
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some(Boolean);
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      onSave({
-        ...route,
-        ...formData
-      });
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setIsSubmitting(true);
+    try {
+      await updateRoute(route.id, formData);
+      onSave();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to update route');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const inputClass = (field: string) =>
+    `w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+    } ${errors[field as keyof typeof errors] ? 'border-red-500' : ''}`;
+
+  if (isFetching) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className={`text-center ${isDarkTheme ? 'text-slate-400' : 'text-gray-500'}`}>
+          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          Loading route details...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {/* Header with Back Button */}
       <div className="mb-6">
         <button
           onClick={onCancel}
-          className={`flex items-center gap-2 mb-4 text-sm font-medium transition-colors ${
-            isDarkTheme
-              ? 'text-slate-400 hover:text-white'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`flex items-center gap-2 mb-4 text-sm font-medium transition-colors ${isDarkTheme ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Routes
         </button>
-        <h1 className={`text-3xl font-bold mb-2 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
-          Edit Route
-        </h1>
-        <p className={`${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
-          Update route information
-        </p>
+        <h1 className={`text-3xl font-bold mb-2 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Edit Route</h1>
+        <p className={isDarkTheme ? 'text-slate-400' : 'text-gray-600'}>Update route information</p>
       </div>
 
-<div className="max-w-7xl mx-auto rounded-xl border p-6">
-      {/* Form Card */}
-      <div className={`max-w-7xl rounded-xl border p-6 ${isDarkTheme ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
+      <div className={`max-w-5xl mx-auto rounded-xl border p-6 ${isDarkTheme ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'}`}>
         <div className="space-y-6">
+          {/* Route Name */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
               Route Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              value={formData.routeName}
-              onChange={(e) => setFormData({ ...formData, routeName: e.target.value })}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkTheme
-                  ? 'bg-slate-900 border-slate-700 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-              } ${errors.routeName ? 'border-red-500' : ''}`}
-              placeholder="Enter route name"
+              value={formData.name}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              className={inputClass('name')}
+              placeholder="e.g. Main Route"
             />
-            {errors.routeName && (
-              <p className="mt-1 text-sm text-red-500">{errors.routeName}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
           </div>
 
+          {/* Origin Branch */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
-              Departure Station <span className="text-red-500">*</span>
+              Origin Branch <span className="text-red-500">*</span>
             </label>
             <select
-              value={formData.departure}
-              onChange={(e) => setFormData({ ...formData, departure: e.target.value })}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkTheme
-                  ? 'bg-slate-900 border-slate-700 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-              } ${errors.departure ? 'border-red-500' : ''}`}
+              value={formData.origin_branch_id}
+              onChange={e => setFormData({ ...formData, origin_branch_id: e.target.value })}
+              className={inputClass('origin_branch_id')}
             >
-              <option value="">Select departure station</option>
-              {stations.map((station) => (
-                <option key={station.id} value={station.id}>
-                  {station.stationName} - {station.city}
+              <option value="">Select origin branch</option>
+              {branches.map(b => (
+                <option key={b.id} value={b.id}>{b.name} — {b.city}</option>
+              ))}
+            </select>
+            {errors.origin_branch_id && <p className="mt-1 text-sm text-red-500">{errors.origin_branch_id}</p>}
+          </div>
+
+          {/* Destination Branch */}
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
+              Destination Branch <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.destination_branch_id}
+              onChange={e => setFormData({ ...formData, destination_branch_id: e.target.value })}
+              className={inputClass('destination_branch_id')}
+            >
+              <option value="">Select destination branch</option>
+              {branches.map(b => (
+                <option key={b.id} value={b.id} disabled={b.id === formData.origin_branch_id}>
+                  {b.name} — {b.city}
                 </option>
               ))}
             </select>
-            {errors.departure && (
-              <p className="mt-1 text-sm text-red-500">{errors.departure}</p>
-            )}
+            {errors.destination_branch_id && <p className="mt-1 text-sm text-red-500">{errors.destination_branch_id}</p>}
           </div>
 
+          {/* Estimated Duration */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`}>
-              Destination Station <span className="text-red-500">*</span>
+              Estimated Duration (hours) <span className="text-red-500">*</span>
             </label>
-            <select
-              value={formData.destination}
-              onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkTheme
-                  ? 'bg-slate-900 border-slate-700 text-white'
-                  : 'bg-white border-gray-300 text-gray-900'
-              } ${errors.destination ? 'border-red-500' : ''}`}
-            >
-              <option value="">Select destination station</option>
-              {stations.map((station) => (
-                <option 
-                  key={station.id} 
-                  value={station.id}
-                  disabled={station.id === formData.departure}
-                >
-                  {station.stationName} - {station.city}
-                </option>
-              ))}
-            </select>
-            {errors.destination && (
-              <p className="mt-1 text-sm text-red-500">{errors.destination}</p>
-            )}
+            <input
+              type="number"
+              min={1}
+              value={formData.estimated_duration_hours}
+              onChange={e => setFormData({ ...formData, estimated_duration_hours: Number(e.target.value) })}
+              className={inputClass('estimated_duration_hours')}
+              placeholder="e.g. 72"
+            />
+            {errors.estimated_duration_hours && <p className="mt-1 text-sm text-red-500">{errors.estimated_duration_hours}</p>}
           </div>
 
+          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               onClick={handleSubmit}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
               <Save className="w-5 h-5" />
-              Update Route
+              {isSubmitting ? 'Updating...' : 'Update Route'}
             </button>
             <button
               onClick={onCancel}
               className={`flex-1 px-6 py-3 rounded-xl font-medium border transition-colors ${
-                isDarkTheme
-                  ? 'border-slate-600 text-slate-300 hover:bg-slate-700'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                isDarkTheme ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'
               }`}
             >
               Cancel
@@ -200,9 +197,8 @@ const EditRoutePage: React.FC<{
           </div>
         </div>
       </div>
-      </div>
     </div>
   );
 };
 
-export default EditRoutePage;
+export default EditRoute;

@@ -11,6 +11,7 @@ import ShippingRequestsSystem from "./pages/requests";
 import RoutesPage from "./pages/routes";
 import "./App.css";
 import SettingsPage from "./pages/setting";
+import CustomersPage from "./pages/customers";
 
 function NavigationIndicator() {
   const isNavigating = useRouteChange();
@@ -49,6 +50,7 @@ function App() {
           <Route path="stations" element={<StationsPage />} />
           <Route path="schedules" element={<Schedules />} />
           <Route path="Users" element={<UsersPage />} />
+          <Route path="users/customers" element={<CustomersPage />} />
           <Route path="roles" element={<RolesPage />} />
           <Route path="requests" element={<ShippingRequestsSystem />} />
           <Route path="routes" element={<RoutesPage />} />

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Ship, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
+import { loginUser } from "../api/api_services/login";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,60 +10,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
-  const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      return {
-        isValid: false,
-        errors: ["Password must be at least 8 characters"],
-      };
-    }
-    if (!/[A-Z]/.test(password)) {
-      return {
-        isValid: false,
-        errors: ["Password must contain at least one uppercase letter"],
-      };
-    }
-    if (!/[a-z]/.test(password)) {
-      return {
-        isValid: false,
-        errors: ["Password must contain at least one lowercase letter"],
-      };
-    }
-    if (!/[0-9]/.test(password)) {
-      return {
-        isValid: false,
-        errors: ["Password must contain at least one number"],
-      };
-    }
-    if (!/[!@#$%^&*]/.test(password)) {
-      return {
-        isValid: false,
-        errors: ["Password must contain at least one special character"],
-      };
-    }
-    return { isValid: true, errors: [] };
-  };
-
-  const authenticateUser = (email: string, password: string) => {
-    // Demo authentication
-    if (email === "admin@amstz.com" && password === "Admin@123") {
-      return { email, name: "Admin User", role: "admin" };
-    }
-    return null;
-  };
-
-  const showToast = (message: string | null, type = "success") => {
+  const showToast = (message: string, type = "success") => {
     const toast = document.createElement("div");
     toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white font-medium z-50 transform transition-all duration-300 ${
       type === "success" ? "bg-green-600" : "bg-red-600"
@@ -76,39 +31,48 @@ const Login = () => {
     }, 3000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    // Validate email
-    if (!validateEmail(formData.email)) {
-      showToast("Please enter a valid email address", "error");
-      return;
-    }
-
-    // Validate password
-    const passwordValidation = validatePassword(formData.password);
-    if (!passwordValidation.isValid) {
-      showToast(passwordValidation.errors[0], "error");
+    if (!formData.email || !formData.password) {
+      showToast("Please enter your email and password", "error");
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const user = authenticateUser(formData.email, formData.password);
+    try {
+      const data = await loginUser(formData.email, formData.password);
 
-      if (user) {
-        showToast("Login successful! Welcome back.", "success");
-        // Redirect to dashboard
+      if (data.token) {
+        // Store token and user info in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            staff_id: data.staff_id,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            position: data.position,
+            branch: data.branch,
+          })
+        );
+
+        showToast(`Welcome back, ${data.first_name}!`, "success");
+
         setTimeout(() => {
           window.location.href = "/admin-portal/#/dashboard";
         }, 1000);
       } else {
-        showToast("Invalid email or password", "error");
+        showToast(data.message || "Login failed. Please try again.", "error");
         setIsLoading(false);
       }
-    }, 1000);
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Invalid email or password";
+      showToast(message, "error");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -146,6 +110,9 @@ const Login = () => {
 
           {/* Login Form */}
           <div className="space-y-5">
+            {/* Hidden platform field */}
+            <input type="hidden" name="platform" value="web" />
+
             {/* Email Field */}
             <div>
               <label
@@ -165,7 +132,7 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full pl-12 pr-4 py-3 bg-slate-800/70 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                  placeholder="admin@amstz.com"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
@@ -255,18 +222,6 @@ const Login = () => {
                 "Sign In"
               )}
             </button>
-          </div>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl backdrop-blur-sm">
-            <p className="text-xs text-slate-400 text-center mb-2">
-              Demo Credentials:
-            </p>
-            <p className="text-xs text-slate-300 text-center">
-              <span className="font-medium">Email:</span> admin@amstz.com
-              <br />
-              <span className="font-medium">Password:</span> Admin@123
-            </p>
           </div>
         </div>
       </div>

@@ -1,294 +1,166 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Save, Calendar } from 'lucide-react';
-import type { ShippingSchedule } from './index';
+import { createBatch, type CreateBatchPayload } from '../api/api_services/batch';
+import { type Route } from '../api/api_services/routes';
 
-// Route type definition
-export interface Route {
-  id: string;
-  routeName: string;
-  departure: string;
-  destination: string;
-}
-
-// Add Shipping Schedule Component
 const AddShippingSchedule: React.FC<{
   isDarkTheme: boolean;
   routes: Route[];
-  onSave: (schedule: Omit<ShippingSchedule, 'id' | 'createdAt'>) => void;
+  onSave: () => void;
   onCancel: () => void;
 }> = ({ isDarkTheme, routes, onSave, onCancel }) => {
-  const [formData, setFormData] = useState({
-    scheduleTitle: '',
-    routeId: '',
-    startingDate: '',
-    estimatedArrivalDate: '',
-    status: 'Available' as 'Full' | 'Almost Full' | 'Available' | 'Completed/Closed',
-    shippingStatus: 'Warehouse' as 'Warehouse' | 'Loaded' | 'In Transit' | 'Arrived'
+  const [formData, setFormData] = useState<CreateBatchPayload>({
+    route_id: '',
+    departure_date: '',
+    estimated_arrival_date: '',
+    capacity_in_cbm: 0,
+    staff_id: localStorage.getItem('staff_id') || '',
   });
 
   const [errors, setErrors] = useState({
-    scheduleTitle: '',
-    routeId: '',
-    startingDate: '',
-    estimatedArrivalDate: ''
+    route_id: '',
+    departure_date: '',
+    estimated_arrival_date: '',
+    capacity_in_cbm: '',
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      scheduleTitle: '',
-      routeId: '',
-      startingDate: '',
-      estimatedArrivalDate: ''
-    };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Validate schedule title
-    if (!formData.scheduleTitle) {
-      newErrors.scheduleTitle = 'Schedule title is required';
+  const validate = () => {
+    const e = { route_id: '', departure_date: '', estimated_arrival_date: '', capacity_in_cbm: '' };
+    if (!formData.route_id) e.route_id = 'Route is required';
+    if (!formData.departure_date) e.departure_date = 'Departure date is required';
+    if (!formData.estimated_arrival_date) {
+      e.estimated_arrival_date = 'Estimated arrival date is required';
+    } else if (formData.departure_date && new Date(formData.estimated_arrival_date) <= new Date(formData.departure_date)) {
+      e.estimated_arrival_date = 'Arrival date must be after departure date';
     }
-
-    // Validate route
-    if (!formData.routeId) {
-      newErrors.routeId = 'Route is required';
+    if (!formData.capacity_in_cbm || formData.capacity_in_cbm <= 0) {
+      e.capacity_in_cbm = 'Capacity must be greater than 0';
     }
-
-    // Validate starting date
-    if (!formData.startingDate) {
-      newErrors.startingDate = 'Starting date is required';
-    }
-
-    // Validate estimated arrival date
-    if (!formData.estimatedArrivalDate) {
-      newErrors.estimatedArrivalDate = 'Estimated arrival date is required';
-    } else if (formData.startingDate && new Date(formData.estimatedArrivalDate) <= new Date(formData.startingDate)) {
-      newErrors.estimatedArrivalDate = 'Arrival date must be after starting date';
-    }
-
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    setErrors(e);
+    return !Object.values(e).some(Boolean);
   };
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      onSave({
-        ...formData,
-        transitUpdates: []
-      });
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setIsSubmitting(true);
+    try {
+      await createBatch(formData);
+      onSave();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || 'Failed to create batch');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const inputClass = (field: string) =>
+    `w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+      isDarkTheme ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'
+    } ${errors[field as keyof typeof errors] ? 'border-red-500' : ''}`;
+
+  const labelClass = `block text-sm font-medium mb-2 ${isDarkTheme ? 'text-slate-300' : 'text-gray-700'}`;
 
   return (
     <div className="min-h-screen p-8">
-      {/* Header with Back Button */}
       <div className="mb-8">
         <button
           onClick={onCancel}
           className={`flex items-center gap-2 mb-4 px-4 py-2 rounded-lg transition-colors ${
-            isDarkTheme 
-              ? 'text-slate-300 hover:text-white hover:bg-slate-800' 
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+            isDarkTheme ? 'text-slate-300 hover:text-white hover:bg-slate-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Schedules
         </button>
-
-        <div>
-          <h1 className={`text-3xl font-bold mb-2 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>
-            Add New Shipping Schedule
-          </h1>
-          <p className={`${isDarkTheme ? 'text-slate-400' : 'text-gray-600'}`}>
-            Create a new batch for shipping
-          </p>
-        </div>
+        <h1 className={`text-3xl font-bold mb-2 ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Add New Batch</h1>
+        <p className={isDarkTheme ? 'text-slate-400' : 'text-gray-600'}>Create a new shipping batch</p>
       </div>
 
-      {/* Form Card */}
-      <div className={`max-w-7xl mx-auto rounded-xl p-8 ${
-        isDarkTheme ? 'bg-slate-800' : 'bg-white'
-      } shadow-xl`}>
+      <div className={`max-w-2xl rounded-xl p-8 ${isDarkTheme ? 'bg-slate-800' : 'bg-white'} shadow-xl`}>
         <div className="space-y-6">
-          {/* Schedule Title */}
+          {/* Route */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-            }`}>
-              Schedule Title *
-            </label>
-            <input
-              type="text"
-              value={formData.scheduleTitle}
-              onChange={(e) => setFormData({ ...formData, scheduleTitle: e.target.value })}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkTheme 
-                  ? 'bg-slate-900 border-slate-700 text-white' 
-                  : 'bg-white border-gray-300 text-gray-900'
-              } ${errors.scheduleTitle ? 'border-red-500' : ''}`}
-              placeholder="Enter schedule title"
-            />
-            {errors.scheduleTitle && (
-              <p className="mt-1 text-sm text-red-500">{errors.scheduleTitle}</p>
-            )}
-          </div>
-
-          {/* Route Selection */}
-          <div>
-            <label className={`block text-sm font-medium mb-2 ${
-              isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-            }`}>
-              Route *
-            </label>
+            <label className={labelClass}>Route <span className="text-red-500">*</span></label>
             <select
-              value={formData.routeId}
-              onChange={(e) => setFormData({ ...formData, routeId: e.target.value })}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                isDarkTheme 
-                  ? 'bg-slate-900 border-slate-700 text-white' 
-                  : 'bg-white border-gray-300 text-gray-900'
-              } ${errors.routeId ? 'border-red-500' : ''}`}
+              value={formData.route_id}
+              onChange={e => setFormData({ ...formData, route_id: e.target.value })}
+              className={inputClass('route_id')}
             >
               <option value="">Select route</option>
-              {routes.map((route) => (
-                <option key={route.id} value={route.id}>
-                  {route.routeName}
-                </option>
+              {routes.map(r => (
+                <option key={r.id} value={r.id}>{r.name}</option>
               ))}
             </select>
-            {errors.routeId && (
-              <p className="mt-1 text-sm text-red-500">{errors.routeId}</p>
-            )}
+            {errors.route_id && <p className="mt-1 text-sm text-red-500">{errors.route_id}</p>}
           </div>
 
-          {/* Date Fields */}
+          {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Starting Date */}
             <div>
-              <label className={`block text-sm font-medium mb-2 ${
-                isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-              }`}>
-                Starting Date *
-              </label>
+              <label className={labelClass}>Departure Date <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Calendar className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  isDarkTheme ? 'text-slate-400' : 'text-gray-400'
-                }`} />
+                <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDarkTheme ? 'text-slate-400' : 'text-gray-400'}`} />
                 <input
                   type="date"
-                  value={formData.startingDate}
-                  onChange={(e) => setFormData({ ...formData, startingDate: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                    isDarkTheme 
-                      ? 'bg-slate-900 border-slate-700 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
-                  } ${errors.startingDate ? 'border-red-500' : ''}`}
+                  value={formData.departure_date}
+                  onChange={e => setFormData({ ...formData, departure_date: e.target.value })}
+                  className={`${inputClass('departure_date')} pl-10`}
                 />
               </div>
-              {errors.startingDate && (
-                <p className="mt-1 text-sm text-red-500">{errors.startingDate}</p>
-              )}
+              {errors.departure_date && <p className="mt-1 text-sm text-red-500">{errors.departure_date}</p>}
             </div>
-
-            {/* Estimated Arrival Date */}
             <div>
-              <label className={`block text-sm font-medium mb-2 ${
-                isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-              }`}>
-                Estimated Arrival Date *
-              </label>
+              <label className={labelClass}>Estimated Arrival Date <span className="text-red-500">*</span></label>
               <div className="relative">
-                <Calendar className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                  isDarkTheme ? 'text-slate-400' : 'text-gray-400'
-                }`} />
+                <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDarkTheme ? 'text-slate-400' : 'text-gray-400'}`} />
                 <input
                   type="date"
-                  value={formData.estimatedArrivalDate}
-                  onChange={(e) => setFormData({ ...formData, estimatedArrivalDate: e.target.value })}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                    isDarkTheme 
-                      ? 'bg-slate-900 border-slate-700 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
-                  } ${errors.estimatedArrivalDate ? 'border-red-500' : ''}`}
+                  value={formData.estimated_arrival_date}
+                  onChange={e => setFormData({ ...formData, estimated_arrival_date: e.target.value })}
+                  className={`${inputClass('estimated_arrival_date')} pl-10`}
                 />
               </div>
-              {errors.estimatedArrivalDate && (
-                <p className="mt-1 text-sm text-red-500">{errors.estimatedArrivalDate}</p>
-              )}
+              {errors.estimated_arrival_date && <p className="mt-1 text-sm text-red-500">{errors.estimated_arrival_date}</p>}
             </div>
           </div>
 
-          {/* Status Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Capacity Status */}
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${
-                isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-              }`}>
-                Capacity Status
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                  isDarkTheme 
-                    ? 'bg-slate-900 border-slate-700 text-white' 
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              >
-                <option value="Available">Available</option>
-                <option value="Almost Full">Almost Full</option>
-                <option value="Full">Full</option>
-                <option value="Completed/Closed">Completed/Closed</option>
-              </select>
-            </div>
-
-            {/* Shipping Status */}
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${
-                isDarkTheme ? 'text-slate-300' : 'text-gray-700'
-              }`}>
-                Shipping Status
-              </label>
-              <select
-                value={formData.shippingStatus}
-                onChange={(e) => setFormData({ ...formData, shippingStatus: e.target.value as any })}
-                className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 ${
-                  isDarkTheme 
-                    ? 'bg-slate-900 border-slate-700 text-white' 
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              >
-                <option value="Warehouse">Warehouse</option>
-                <option value="Loaded">Loaded</option>
-                <option value="In Transit">In Transit</option>
-                <option value="Arrived">Arrived</option>
-              </select>
-            </div>
+          {/* Capacity */}
+          <div>
+            <label className={labelClass}>Capacity (CBM) <span className="text-red-500">*</span></label>
+            <input
+              type="number"
+              min={1}
+              value={formData.capacity_in_cbm || ''}
+              onChange={e => setFormData({ ...formData, capacity_in_cbm: Number(e.target.value) })}
+              className={inputClass('capacity_in_cbm')}
+              placeholder="e.g. 900"
+            />
+            {errors.capacity_in_cbm && <p className="mt-1 text-sm text-red-500">{errors.capacity_in_cbm}</p>}
           </div>
 
           {/* Info Box */}
-          <div className={`rounded-lg p-4 ${
-            isDarkTheme ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'
-          }`}>
+          <div className={`rounded-lg p-4 ${isDarkTheme ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
             <p className={`text-sm ${isDarkTheme ? 'text-blue-300' : 'text-blue-700'}`}>
-              <strong>Note:</strong> Transit updates can only be added when the shipping status is "In Transit". 
-              You can add these updates after creating the schedule by editing it.
+              <strong>Note:</strong> The batch number will be auto-generated by the system upon creation.
             </p>
           </div>
 
-          {/* Action Buttons */}
+          {/* Actions */}
           <div className="flex gap-4 pt-4">
             <button
               onClick={handleSubmit}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2"
+              disabled={isSubmitting}
+              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-400 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
               <Save className="w-5 h-5" />
-              Save Schedule
+              {isSubmitting ? 'Saving...' : 'Save Batch'}
             </button>
             <button
               onClick={onCancel}
               className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors ${
-                isDarkTheme 
-                  ? 'bg-slate-700 text-white hover:bg-slate-600' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                isDarkTheme ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               Cancel

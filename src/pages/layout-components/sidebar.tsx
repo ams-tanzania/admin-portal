@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  Ship,
   LayoutDashboard,
   Calendar,
   FileText,
@@ -11,12 +10,17 @@ import {
   Settings,
   X,
   RouteIcon,
+  ChevronDown,
+  ChevronRight,
+  UsersRound,
+  UserCheck,
+  UserCog,
 } from "lucide-react";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
-  isDarkTheme?: boolean; // Add theme prop
+  isDarkTheme?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -25,6 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isDarkTheme = false,
 }) => {
   const location = useLocation();
+  const [usersDropdownOpen, setUsersDropdownOpen] = useState(false);
 
   const menuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -33,13 +38,33 @@ const Sidebar: React.FC<SidebarProps> = ({
     { path: "/dashboard/stations", icon: MapPin, label: "Stations" },
     { path: "/dashboard/routes", icon: RouteIcon, label: "Routes" },
     { path: "/dashboard/roles", icon: Shield, label: "Roles & Permissions" },
-    { path: "/dashboard/users", icon: Users, label: "Users" },
     { path: "/dashboard/settings", icon: Settings, label: "Settings" },
   ];
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const userSubItems = [
+    { path: "/dashboard/users", icon: UsersRound, label: "All Users" },
+    { path: "/dashboard/users/customers", icon: UserCheck, label: "Customers" },
+    { path: "/dashboard/users/staffs", icon: UserCog, label: "Staffs" },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const isUsersActive = userSubItems.some((item) =>
+    location.pathname.startsWith(item.path)
+  );
+
+  // Auto-open dropdown if a users sub-route is active
+  React.useEffect(() => {
+    if (isUsersActive) setUsersDropdownOpen(true);
+  }, [isUsersActive]);
+
+  const activeLinkClass = isDarkTheme
+    ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+    : "bg-orange-50 text-orange-600 border border-orange-200";
+
+  const inactiveLinkClass = isDarkTheme
+    ? "text-slate-400 hover:bg-slate-800 hover:text-white"
+    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900";
 
   return (
     <>
@@ -114,20 +139,59 @@ const Sidebar: React.FC<SidebarProps> = ({
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => onClose()}
+                onClick={onClose}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
-                  active
-                    ? "bg-linear-to-r from-orange-400 to-orange-300 text-white shadow-lg shadow-blue-500/60"
-                    : isDarkTheme
-                      ? "text-slate-400 hover:text-white hover:bg-slate-800"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  active ? activeLinkClass : inactiveLinkClass
                 }`}
               >
-                <Icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm font-medium">{item.label}</span>
               </Link>
             );
           })}
+
+          {/* Users Dropdown */}
+          <div>
+            <button
+              onClick={() => setUsersDropdownOpen(!usersDropdownOpen)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+                isUsersActive ? activeLinkClass : inactiveLinkClass
+              }`}
+            >
+              <div className="flex items-center space-x-3">
+                <Users className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm font-medium">Users</span>
+              </div>
+              {usersDropdownOpen ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* Sub Items */}
+            {usersDropdownOpen && (
+              <div className="mt-1 ml-4 pl-4 border-l space-y-1 border-orange-400/40">
+                {userSubItems.map((sub) => {
+                  const SubIcon = sub.icon;
+                  const active = isActive(sub.path);
+                  return (
+                    <Link
+                      key={sub.path}
+                      to={sub.path}
+                      onClick={onClose}
+                      className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all ${
+                        active ? activeLinkClass : inactiveLinkClass
+                      }`}
+                    >
+                      <SubIcon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-sm font-medium">{sub.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
       </aside>
     </>
