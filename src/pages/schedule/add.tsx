@@ -4,17 +4,19 @@ import { createBatch, type CreateBatchPayload } from '../api/api_services/batch'
 import { type Route } from '../api/api_services/routes';
 
 const AddShippingSchedule: React.FC<{
+
   isDarkTheme: boolean;
   routes: Route[];
   onSave: () => void;
   onCancel: () => void;
 }> = ({ isDarkTheme, routes, onSave, onCancel }) => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [formData, setFormData] = useState<CreateBatchPayload>({
     route_id: '',
     departure_date: '',
     estimated_arrival_date: '',
     capacity_in_cbm: 0,
-    staff_id: localStorage.getItem('staff_id') || '',
+    staff_id: user.staff_id || '',
   });
 
   const [errors, setErrors] = useState({
@@ -46,7 +48,7 @@ const AddShippingSchedule: React.FC<{
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      await createBatch(formData);
+      await createBatch(formData); 
       onSave();
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Failed to create batch');
